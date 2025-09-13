@@ -1,8 +1,10 @@
 package service
 
 import (
+	"fmt"
+	"sync"
+
 	"github.com/Chandra5468/movie-recommendation-system/internal/repository"
-	"github.com/Chandra5468/movie-recommendation-system/types"
 )
 
 type Service struct {
@@ -13,8 +15,14 @@ func NewService(repo *repository.Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) FetchMovies() ([]types.Movie, error) {
-	return s.repo.GetDistinctGenreMovies()
+func (s *Service) FetchMovies(category string, wg *sync.WaitGroup, data chan<- []string) {
+	defer wg.Done()
+	res, err := s.repo.GetDistinctGenreMovies(category)
+	if err != nil {
+		fmt.Printf("Error fetching %s: %v\n", category, err)
+		return
+	}
+	data <- res
 }
 
 // func (s *Service) AddMovie(movie Movie) error {

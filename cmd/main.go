@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Initialize database connection
-	db, err := db.Connect("postgres://postgres:user@localhost/cfq?sslmode=disable")
+	db, err := db.Connect("postgres://postgres:user@localhost/recomm?sslmode=disable")
 	if err != nil {
 		log.Fatalf("Could not connect to the database: %v", err)
 	}

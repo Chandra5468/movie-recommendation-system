@@ -2,8 +2,7 @@ package repository
 
 import (
 	"database/sql"
-
-	"github.com/Chandra5468/movie-recommendation-system/types"
+	"fmt"
 )
 
 type Repository struct {
@@ -14,27 +13,37 @@ func NewRepository(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) GetDistinctGenreMovies() ([]types.Movie, error) {
-	rows, err := r.db.Query("SELECT id, title, director, release_year FROM movies")
+func (r *Repository) GetDistinctGenreMovies(column string) ([]string, error) {
+	var query string
+
+	// Use an if-else block to build the correct query
+	if column == "director" {
+		query = fmt.Sprintf("SELECT DISTINCT %s FROM movies", column)
+	} else {
+		// This handles arrays like 'genre' and 'actors'
+		query = fmt.Sprintf("SELECT DISTINCT UNNEST(%s) FROM movies", column)
+	}
+
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var movies []types.Movie
+	var values []string
 	for rows.Next() {
-		var movie types.Movie
-		if err := rows.Scan(&movie.ID, &movie.Title, &movie.Director, &movie.ReleaseYear); err != nil {
+		var value string
+		if err := rows.Scan(&value); err != nil {
 			return nil, err
 		}
-		movies = append(movies, movie)
+		values = append(values, value)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return movies, nil
+	return values, nil
 }
 
 // func (r *Repository) SaveMovie(movie Movie) error {

@@ -1,8 +1,12 @@
 package types
 
+import "github.com/google/uuid"
+
 type Movie struct {
-	ID          int
-	Title       string
-	Director    string
-	ReleaseYear int
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Genre    []string  `json:"genre"`
+	Actors   []string  `json:"actors"`
+	Budget   int       `json:"budget"`
+	Director string    `json:"director"`
 }
